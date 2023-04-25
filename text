@@ -169,6 +169,7 @@ p.save()
 p = models.Declarer.objects.get(phone='12341234')
 p.phone = 2323
 p.save()
+
 models.Declarer.objects.get_or_create(phone='12341234', name='Владимир', age='2002-08-01', gender='men')
 
 

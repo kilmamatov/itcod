@@ -1,0 +1,231 @@
+--1.3
+
+СОХРАНЕНИЕ ОБЬЕКТОВ В БД
+№1
+
+from core import models
+
+# создание экст служб
+a = models.Service(name='Скорая', cod='101', phone='101101')
+a.save()
+
+a1 = models.Service.objects.create(name='Полиция', cod='102', phone='102102')
+
+# создание заявителя
+b = models.Declarer(name='Иванов Иван Иванович', age='2006-02-03', gender='men')
+b.save()
+
+b1 = models.Declarer.objects.create(name='Мирная Мира Мировна', age='1999-02-03', gender='women')
+
+# создание обращения(save())
+obr = models.Appeal(number='12',casualties='5')
+b = models.Declarer.objects.get(name='Иванов Иван Иванович')
+obr.declarer = b
+obr.save()
+
+#Создание обращения create()
+b = models.Declarer.objects.get(name='Иванов Иван Иванович')
+models.Appeal.objects.create(declarer=b, number='13', casualties='1')
+
+№3
+#Добаавление Экст служб(add)
+ser = models.Service.objects.get(name='Скорая')
+obr.services.add = ser
+
+#Добовление Экст служб(set)
+obr = models.Appeal(number='12',casualties='5') или
+obr = models.Appeal.objects.get(number='12')
+a = models.Service.get(name='Полиция')
+a.appeals.set([obr])
+
+№2
+# Создание (обращения) через мендр запросов обьекта (Заявитель)
+b = models.Declarer.objects.get(name='Иванов Иван Иванович')
+b.appeals.create(number='14',casualties='24')
+
+ЗАПРОСЫ В БД
+
+№1
+models.Declarer.objects.filter(pk=1) <QuerySet [<Declarer: Зубенко Михаил Петрович>]>
+models.Declarer.objects.get(pk=1) (<Declarer: Зубенко Михаил Петрович>)
+models.Declarer.objects.all()[0] (<Declarer: Зубенко Михаил Петрович>)
+
+№2
+1 Способ
+z = models.Declarer.objects.get(pk=3)
+z.appeals.all()
+2 Способ
+models.Appeal.objects.filter(declarer__name='Иванов Иван Иванович')
+
+№3
+models.Service.objects.all()[:3]
+(<QuerySet [<Service: Скорая>, <Service: Полиция>, <Service: Пожарная>]>)
+
+№4
+models.Declarer.objects.all().reverse()[:3]
+
+№5
+1
+models.Appeal.objects.latest('created')
+models.Appeal.objects.earliest('created')
+2
+models.Appeal.objects.order_by('created')[0]
+models.Appeal.objects.order_by('created').reverse()[0]
+
+№6
+models.Appeal.objects.all()[::2]
+
+№7
+Одно обращение
+
+№8
+models.Appeal.objects.all().count()
+
+№9
+models.Appeal.objects.order_by("?").first()
+Примечание (медленное выполнение)
+
+ФИЛЬТРАЦИЯ
+
+№1
+models.Appeal.objects.filter(declarer__id='2')
+<QuerySet [<Appeal: 11 - 2023-04-12>]>
+
+№2
+models.Declarer.objects.filter(gender='men', appeals=None)
+
+№3
+models.Declarer.objects.order_by('id')
+
+№4
+models.Declarer.objects.filter(age__year__lte='2005')
+
+№5
+models.Declarer.objects.filter(age__year__gte='2005')
+
+№6
+models.Declarer.objects.all().exists()
+
+№7
+models.Declarer.objects.filter(name__contains='Алекс')
+
+№8
+models.Appeal.objects.all().exclude(services=None)
+
+№9
+models.Appeal.objects.filter(services__cod='101')[0].created
+
+№10
+models.Appeal.objects.filter(created__lt='2023-04-13')
+
+#11
+models.Declarer.objects.filter(phone=None).filter(photo='')
+
+#12
+models.Declarer.objects.filter(appeals__services__cod='102')
+()
+
+№13
+-----
+
+№14
+models.Appeal.objects.filter(created='2023-04-12')
+
+№15
+models.Declarer.objects.filter(phone=None).count()
+
+№16
+models.Declarer.objects.order_by('health_status').distinct('health_status')
+
+№17
+---
+
+№18
+models.Declarer.objects.values('phone')
+
+№19
+models.Declarer.objects.values('name', 'age', 'gender', 'phone', 'photo')
+
+№20
+-----
+
+№21
+p = models.Declarer.objects.get(phone='12341234')
+p.phone = 2323
+p.save()
+
+№22
+------
+
+№23
+models.Declarer.objects.bulk_create(
+[models.Declarer(name='ТЕст', age='2002-11-16', gender='men'),
+ models.Declarer(name='ТЕст2', age='2002-11-12', gender='men')]
+ )
+
+№24
+
+p = models.Declarer.objects.filter(Q(pk=1) | Q(pk=2))
+p.update(health_status='Полностью здоров')
+
+
+25
+models.Appeal.objects.filter(pk=1).values('declarer__name')
+
+
+26
+list(models.Appeal.objects.values('number', 'services__cod'))
+
+
+27
+list(models.Appeal.objects.values('created'))
+
+
+28
+models.Appeal.objects.none()
+
+
+29
+from django.db.models import Avg
+models.Appeal.objects.aggregate(Avg('casualties'))
+{'casualties__avg': 8.25}
+
+
+30
+models.Appeal.objects.aggregate(Sum('casualties'))
+{'casualties__sum': 33}
+
+
+31
+models.Appeal.objects.values('number').annotate(Count("services"))
+<QuerySet [
+{'number': 11, 'services__count': 0},
+{'number': 12, 'services__count': 2},
+{'number': 13, 'services__count': 0},
+{'number': 14, 'services__count': 1}
+]>
+
+32
+models.Appeal.objects.annotate(num_services=Count("services")).aggregate(Avg('num_services'))
+{'num_services__avg': 0.75}
+
+33
+models.Appeal.objects.aggregate(Max('casualties'), Min('casualties'))
+
+34
+list(models.Declarer.objects.values('name').annotate(Count('appeals')))
+
+[{'name': 'ntcn', 'appeals__count': 0},
+ {'name': 'Александра', 'appeals__count': 0},
+ {'name': 'Алексей', 'appeals__count': 0},
+ {'name': 'Дусин Игорь', 'appeals__count': 0},
+ {'name': 'Зубенко Михаил Петрович', 'appeals__count': 0},
+ {'name': 'Иванов Иван Иванович', 'appeals__count': 3},
+ {'name': 'Николев Артем', 'appeals__count': 0},
+ {'name': 'Ниникова Нина Редина', 'appeals__count': 0},
+ {'name': 'Петя', 'appeals__count': 1},
+ {'name': 'Пунин Алексей Владимирович', 'appeals__count': 0},
+ {'name': 'ТЕст', 'appeals__count': 0},
+ {'name': 'ТЕст2', 'appeals__count': 0}]
+
+

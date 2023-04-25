@@ -98,10 +98,20 @@ models.Declarer.objects.filter(gender='men', appeals=None)
 models.Declarer.objects.order_by('id')
 
 №4
-models.Declarer.objects.filter(age__year__lte='2005')
+from django.contrib.auth.models import User
+from datetime import date, timedelta
+
+p = date.today() - timedelta(days=(18*365))
+
+models.Declarer.objects.filter(age__lte=p)
 
 №5
-models.Declarer.objects.filter(age__year__gte='2005')
+from django.contrib.auth.models import User
+from datetime import date, timedelta
+
+p = date.today() - timedelta(days=(18*365))
+
+models.Declarer.objects.filter(age__gte=p)
 
 №6
 models.Declarer.objects.all().exists()
@@ -154,8 +164,13 @@ p = models.Declarer.objects.get(phone='12341234')
 p.phone = 2323
 p.save()
 
+
 №22
-------
+p = models.Declarer.objects.get(phone='12341234')
+p.phone = 2323
+p.save()
+models.Declarer.objects.get_or_create(phone='12341234', name='Владимир', age='2002-08-01', gender='men')
+
 
 №23
 models.Declarer.objects.bulk_create(

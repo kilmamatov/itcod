@@ -133,10 +133,16 @@ models.Declarer.objects.filter(phone=None).filter(photo='')
 
 #12
 models.Declarer.objects.filter(appeals__services__cod='102')
-()
+
 
 №13
------
+qs1 = models.Declarer.objects.filter(phone=None).filter(photo='')
+qs2 = models.Declarer.objects.filter(appeals__services__cod='102')
+qs1.union(qs2)
+qs1.intersection(qs2)
+qs1.difference(qs2)
+
+
 
 №14
 models.Appeal.objects.filter(created='2023-04-12')
@@ -148,7 +154,7 @@ models.Declarer.objects.filter(phone=None).count()
 models.Declarer.objects.order_by('health_status').distinct('health_status')
 
 №17
----
+models.Appeal.objects.filter(description__icontains='ключевое слове без уч рег')
 
 №18
 models.Declarer.objects.values('phone')
@@ -157,7 +163,7 @@ models.Declarer.objects.values('phone')
 models.Declarer.objects.values('name', 'age', 'gender', 'phone', 'photo')
 
 №20
------
+SELECT * FROM core_service
 
 №21
 p = models.Declarer.objects.get(phone='12341234')
@@ -243,5 +249,7 @@ list(models.Declarer.objects.values('name').annotate(Count('appeals')))
  {'name': 'Пунин Алексей Владимирович', 'appeals__count': 0},
  {'name': 'ТЕст', 'appeals__count': 0},
  {'name': 'ТЕст2', 'appeals__count': 0}]
+
+-- 1.4 АДМИНКА
 
 

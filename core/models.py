@@ -57,6 +57,7 @@ class Appeal(models.Model):
     status = models.CharField('Статус', max_length=10, choices=status_choices, default='В работе')
     casualties = models.IntegerField('Количество пострадавших')
     dont_call = models.BooleanField('Не звонить', null=True, blank=True)
+    description = models.TextField('Описание', blank=True)
 
     class Meta:
         ordering = ['created', 'number']

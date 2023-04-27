@@ -191,34 +191,34 @@ p = models.Declarer.objects.filter(Q(pk=1) | Q(pk=2))
 p.update(health_status='Полностью здоров')
 
 
-25
+№25
 models.Appeal.objects.filter(pk=1).values('declarer__name')
 
 
-26
+№26
 list(models.Appeal.objects.values('number', 'services__cod'))
 
 
-27
+№27
 list(models.Appeal.objects.values('created'))
 
 
-28
+№28
 models.Appeal.objects.none()
 
 
-29
+№29
 from django.db.models import Avg
 models.Appeal.objects.aggregate(Avg('casualties'))
 {'casualties__avg': 8.25}
 
 
-30
+№30
 models.Appeal.objects.aggregate(Sum('casualties'))
 {'casualties__sum': 33}
 
 
-31
+№31
 models.Appeal.objects.values('number').annotate(Count("services"))
 <QuerySet [
 {'number': 11, 'services__count': 0},
@@ -227,14 +227,14 @@ models.Appeal.objects.values('number').annotate(Count("services"))
 {'number': 14, 'services__count': 1}
 ]>
 
-32
+№32
 models.Appeal.objects.annotate(num_services=Count("services")).aggregate(Avg('num_services'))
 {'num_services__avg': 0.75}
 
-33
+№33
 models.Appeal.objects.aggregate(Max('casualties'), Min('casualties'))
 
-34
+№34
 list(models.Declarer.objects.values('name').annotate(Count('appeals')))
 
 [{'name': 'ntcn', 'appeals__count': 0},
@@ -251,5 +251,117 @@ list(models.Declarer.objects.values('name').annotate(Count('appeals')))
  {'name': 'ТЕст2', 'appeals__count': 0}]
 
 -- 1.4 АДМИНКА
+
+№1-2
+
+@admin.register(models.Appeal)
+class Appeal(admin.ModelAdmin):
+    list_display = ('number', 'status')
+    list_editable = ('description')
+
+
+@admin.register(models.Service)
+class Service(admin.ModelAdmin):
+    list_display = ('name',)
+
+
+@admin.register(models.Declarer)
+class Declarer(admin.ModelAdmin):
+    list_display = ('name',)
+
+№3
+class Appeal(admin.ModelAdmin):
+    fields = ['number']
+
+
+admin.site.register(models.Appeal, Appeal)
+
+
+----1.5
+
+№1
+
+def appleal(request):
+    count = models.Appeal.objects.count()
+    if count:
+        return HttpResponse(count)
+    else:
+        raise Http404
+
+№2
+
+def declarer_phone(request, pk):
+    qs = models.Declarer.objects.get(pk=pk)
+    phone = qs.phone
+    if phone:
+        return HttpResponse(phone)
+    else:
+        raise Http404
+
+№3
+def no_admin(request):
+    return redirect('/admin/')
+
+№4
+def val(request, values):
+    return HttpResponse(values)
+
+
+№5
+def serp(request, values):
+    phone = models.Declarer.objects.filter(phone=values).values()
+    if phone:
+        return HttpResponse(phone)
+    else:
+        raise Http404
+-----
+def serp(request, values):
+    object_list = []
+    for p in models.Declarer.objects.filter(phone=values):
+        object_list.append({
+            'id': p.id,
+            'name': p.name,
+            'age': p.age,
+            'gender': p.gender,
+            'phone': p.phone,
+            'health_status': p.health_status
+        })
+        return HttpResponse({'result': object_list})
+
+
+№6
+
+def declarer_js(request, pk):
+    object_list = []
+    for p in models.Declarer.objects.filter(pk=pk):
+        object_list.append({
+            'id': p.id,
+            'name': p.name,
+            'age': p.age,
+            'gender': p.gender,
+            'phone': p.phone,
+            'health_status': p.health_status
+        })
+    return JsonResponse({'Declarer': object_list})
+
+-----URLS
+
+№1
+path('', include(core.urls, namespace='core')),
+
+app_name = 'core'
+
+№2-4
+
+urlpatterns = [
+    path('appleal/', core.views.appleal, name='appleal'),
+    path('declarer_phone/<int:pk>/', core.views.declarer_phone, name='declarer_phone'),
+    path('no_admin/', core.views.no_admin, name='no_admin'),
+    path('val/<str:values>', core.views.val, name='val'),
+    path('serp/<str:values>', core.views.serp, name='serp'),
+    path('declarer_js/<int:pk>', core.views.declarer_js, name='declarer_js'),
+]
+
+
 
 

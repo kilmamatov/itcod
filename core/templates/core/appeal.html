@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+<body>
+    {% for p in appeals %}
+        <h4>Номер обращения</h4>
+        <li>
+        {{p.number}}
+        </li>
+        <h4>Имя заявителя</h4>
+        <li>
+        {{p.declarer.name}}
+        </li>
+        <h4>Время обращения</h4>
+        {{p.created}}
+        <h4>количество пострадавших</h4>
+        {{p.casualties}}
+        <h4>Не звонить</h4>
+        {{p.dont_call}}
+        <h4>Описание</h4>
+        {{p.description}}
+        <h4>Экстренные службы</h4>
+            {% for s in service %}
+            <li>
+            {{s.name}}
+            </li>
+            {% endfor %}
+    {% endfor %}
+</body>
+</html>

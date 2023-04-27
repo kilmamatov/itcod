@@ -352,7 +352,6 @@ path('', include(core.urls, namespace='core')),
 app_name = 'core'
 
 №2-4
-
 urlpatterns = [
     path('appleal/', core.views.appleal, name='appleal'),
     path('declarer_phone/<int:pk>/', core.views.declarer_phone, name='declarer_phone'),

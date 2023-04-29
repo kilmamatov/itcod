@@ -76,3 +76,8 @@ def service_detail(request, pk):
 def appeal_list(request):
     appeals = models.Appeal.objects.all()
     return render(request, 'core/appeal_list.html', {'appeals': appeals})
+
+
+def index(request):
+    return render(request, 'core/index.html')
+

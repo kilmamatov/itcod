@@ -361,6 +361,8 @@ urlpatterns = [
     path('declarer_js/<int:pk>', core.views.declarer_js, name='declarer_js'),
 ]
 
-
-
+---ДОПОЛНИТЕЛЬНОЕ
+appeal.html
+declarer.html
+service.html
 

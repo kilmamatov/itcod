@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ru">
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
@@ -7,13 +7,9 @@
 <body>
     {% for p in appeals %}
         <h4>Номер обращения</h4>
-        <li>
         {{p.number}}
-        </li>
         <h4>Имя заявителя</h4>
-        <li>
         {{p.declarer.name}}
-        </li>
         <h4>Время обращения</h4>
         {{p.created}}
         <h4>количество пострадавших</h4>
@@ -22,12 +18,16 @@
         {{p.dont_call}}
         <h4>Описание</h4>
         {{p.description}}
+        {% if service %}
         <h4>Экстренные службы</h4>
-            {% for s in service %}
-            <li>
-            {{s.name}}
-            </li>
-            {% endfor %}
+            <ol>
+                {% for s in service %}
+                    <li>{{s.name}}</li>
+                {% endfor %}
+            </ol>
+        {% else %}
+            <h4>Экстренные службы не назначины</h4>
+        {% endif %}
     {% endfor %}
 </body>
 </html>

@@ -12,8 +12,9 @@ urlpatterns = [
     # path('val/<str:values>', core.views.val, name='val'),
     # path('serp/<str:values>', core.views.serp, name='serp'),
     # path('declarer_js/<int:pk>', core.views.declarer_js, name='declarer_js'),
-    path('appleals/<int:pk>', core.views.appeal_detail),
+    path('appeals/<int:pk>', core.views.appeal_detail),
     path('declarers/<int:pk>', core.views.declarer_detail),
     path('services/<int:pk>', core.views.service_detail),
-    path('appeal_list/', core.views.appeal_list)
+    path('appeal_list/', core.views.appeal_list),
+    path('', core.views.index)
 ]

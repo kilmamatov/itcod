@@ -1,12 +1,14 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-  {% for p in appeals %}
-  {{p.number}}
-  {% endfor %}
-</body>
-</html>
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <ol>
+        {% for i in appeals %}
+        <li>{{i.number}}</li>
+            {% if i.services %}
+            {{ i.services }}
+            {% else %}
+            <h4>Нет служб</h4>
+            {% endif %}
+        {% endfor %}
+    </ol>
+{% endblock %}

@@ -5,6 +5,9 @@
     <title>Title</title>
 </head>
 <body>
+    {% for i in a %}
+    {{ i.number }}
+    {% endfor %}
     {% for p in appeals %}
         <h4>Номер обращения</h4>
         {{p.number}}

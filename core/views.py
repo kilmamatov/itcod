@@ -58,9 +58,10 @@ from django.shortcuts import redirect
 
 
 def appeal_detail(request, pk):
+    a = models.Appeal.objects.all()
     appeals = models.Appeal.objects.filter(pk=pk)
     service = models.Service.objects.filter(appeals__pk=pk)
-    return render(request, 'core/appeal.html', {'appeals': appeals, 'service': service})
+    return render(request, 'core/appeal.html', {'appeals': appeals, 'service': service, 'a': a})
 
 
 def declarer_detail(request, pk):
@@ -79,5 +80,9 @@ def appeal_list(request):
 
 
 def index(request):
-    return render(request, 'core/index.html')
+    return render(request, 'core/index.html', context={'title': 'Главная страница'})
 
+
+def declarer_list(request):
+    declarers = models.Declarer.objects.all()
+    return render(request, 'core/declarer_list.html', context={'title': 'Список заявителей', 'declarers': declarers})

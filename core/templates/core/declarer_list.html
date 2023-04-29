@@ -1,0 +1,11 @@
+{% extends 'core/base.html' %}
+
+
+{% block content %}
+    <h4>список заявителей</h4>
+    <ol>
+        {% for p in declarers %}
+        <li>{{p}}</li>
+        {% endfor %}
+    </ol>
+{% endblock %}

@@ -16,5 +16,6 @@ urlpatterns = [
     path('declarers/<int:pk>', core.views.declarer_detail),
     path('services/<int:pk>', core.views.service_detail),
     path('appeal_list/', core.views.appeal_list),
-    path('', core.views.index)
+    path('declarer_list/', core.views.declarer_list),
+    path('', core.views.index),
 ]

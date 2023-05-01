@@ -1,3 +1,5 @@
+
+
 from django.shortcuts import render, get_object_or_404
 from core import models
 from django.http import HttpResponse, Http404, JsonResponse
@@ -86,3 +88,11 @@ def index(request):
 def declarer_list(request):
     declarers = models.Declarer.objects.all()
     return render(request, 'core/declarer_list.html', context={'title': 'Список заявителей', 'declarers': declarers})
+
+
+# def date(request):
+#     now = datetime.now()
+#     year = 123
+#     return render(request, 'core/footer.html', {'y': year})
+
+

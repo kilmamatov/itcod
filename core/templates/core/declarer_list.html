@@ -5,7 +5,8 @@
     <h4>список заявителей</h4>
     <ol>
         {% for p in declarers %}
-        <li>{{p}}</li>
+        <li><a href="/declarers/{{p.pk}}">{{p}}</a></li>
         {% endfor %}
     </ol>
+{% include "core/footer.html" with year=y %}
 {% endblock %}

@@ -1,17 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    {% for p in declarers %}
-    {{p.name}}
-    {{p.age}}
-    {{p.gender}}
-    {{p.phone}}
-    {{p.photo}}
-    {{p.health_status}}
-    {% endfor %}
-</body>
-</html>
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <ol>
+        {% for p in declarers %}
+        <li>{{p.name}}</li>
+        <li>{{p.age}}</li>
+        <li>{{p.gender}}</li>
+        <li>{{p.phone}}</li>
+        <li>{{p.photo}}</li>
+        <li>{{p.health_status}}</li>
+        {% endfor %}
+    </ol>
+
+{% include "core/footer.html" with year=y %}
+{% endblock %}

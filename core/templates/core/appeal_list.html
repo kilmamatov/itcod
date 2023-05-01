@@ -4,6 +4,14 @@
     <ol>
         {% for i in appeals %}
         <li><a href="/appeals/{{i.pk}}">{{i.number}}</a></li>
+            <ol>
+            {% for s in i.services.all %}
+            <li>{{s}}</li>
+            {% empty %}
+            <p>Не назнач</p>
+            {% endfor %}
+            </ol>
         {% endfor %}
     </ol>
+{% include "core/footer.html" with year=y %}
 {% endblock %}

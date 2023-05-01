@@ -1,13 +1,11 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
-    {% for i in a %}
-    {{ i.number }}
-    {% endfor %}
+{% extends 'core/base.html' %}
+
+{% block content %}
+    <ol>
+        {% for i in a %}
+        <li><a href="/appeals/{{i.pk}}">{{i.number}}</a></li>
+        {% endfor %}
+    </ol>
     {% for p in appeals %}
         <h4>Номер обращения</h4>
         {{p.number}}
@@ -20,17 +18,16 @@
         <h4>Не звонить</h4>
         {{p.dont_call}}
         <h4>Описание</h4>
+        {% if p.description %}
         {{p.description}}
-        {% if service %}
-        <h4>Экстренные службы</h4>
-            <ol>
-                {% for s in service %}
-                    <li>{{s.name}}</li>
-                {% endfor %}
-            </ol>
         {% else %}
-            <h4>Экстренные службы не назнач</h4>
+        <h5>Описания нет</h5>
         {% endif %}
+        <h4>Экстренные службы</h4>
+        {% for s in service %}
+        <li>{{s.name}}</li>
+        {% empty %}
+        <h5>Не назначенны</h5>
+        {% endfor %}
     {% endfor %}
-</body>
-</html>
+{% endblock %}

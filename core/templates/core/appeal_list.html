@@ -3,12 +3,7 @@
 {% block content %}
     <ol>
         {% for i in appeals %}
-        <li>{{i.number}}</li>
-            {% if i.services %}
-            {{ i.services }}
-            {% else %}
-            <h4>Нет служб</h4>
-            {% endif %}
+        <li><a href="/appeals/{{i.pk}}">{{i.number}}</a></li>
         {% endfor %}
     </ol>
 {% endblock %}

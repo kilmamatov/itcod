@@ -13,5 +13,7 @@
             </ol>
         {% endfor %}
     </ol>
+    <h5>Среднее количество экс служб: </h5>
+    <h5>Количество обращений: {{ appeals|length }}</h5>
 {% include "core/footer.html" with year=y %}
 {% endblock %}

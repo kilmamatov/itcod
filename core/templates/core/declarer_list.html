@@ -5,7 +5,13 @@
     <h4>список заявителей</h4>
     <ol>
         {% for p in declarers %}
-        <li><a href="/declarers/{{p.pk}}">{{p}}</a></li>
+        {% if forloop.first %}
+            <li><a href="/declarers/{{p.pk}}">{{p}}</a></li>Первый
+        {% elif forloop.last %}
+            <li><a href="/declarers/{{p.pk}}">{{p}}</a></li>Последний
+        {% else %}
+            <li><a href="/declarers/{{p.pk}}">{{p}}</a></li>
+        {% endif %}
         {% endfor %}
     </ol>
 {% include "core/footer.html" with year=y %}

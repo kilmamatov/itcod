@@ -7,28 +7,23 @@
         {% endfor %}
     </ol>
     {% for p in appeals %}
-        <h4>Номер обращения</h4>
-        {{p.number}}
-        <h4>Имя заявителя</h4>
-        {{p.declarer.name}}
-        <h4>Время обращения</h4>
-        {{p.created}}
-        <h4>количество пострадавших</h4>
-        {{p.casualties}}
-        <h4>Не звонить</h4>
-        {{p.dont_call}}
+        <h4>Номер обращения: {{p.number}}</h4>
+        <h4>Имя заявителя: {{p.declarer.name}}</h4>
+        <h4>Время обращения: {{p.created|date:"D d M Y"}}</h4>
+        <h4>Прошло с обращения: {{p.created|timesince}}</h4>
+        <h4>количество пострадавших: {{p.casualties}}</h4>
+        <h4>Не звонить: {{p.dont_call|yesno:"Да,Нет"}}</h4>
         <h4>Описание</h4>
         {% if p.description %}
         {{p.description}}
         {% else %}
         <h5>Описания нет</h5>
         {% endif %}
-        <h4>Экстренные службы</h4>
-        {% for s in service %}
-        <li>{{s.name}}</li>
-        {% empty %}
-        <h5>Не назначенны</h5>
-        {% endfor %}
+        {% if p.services %}
+        <h4>Экстренные службы: {{p.services.all|join:', '|upper}}</h4>
+        {% else %}
+        <h5>Служб нет</h5>
+        {% endif %}
     {% endfor %}
 {% include "core/footer.html" with year=y %}
 {% endblock %}

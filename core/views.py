@@ -2,6 +2,7 @@ from django.db.models import Count, Avg
 from django.views.generic import ListView, TemplateView, View
 from django.shortcuts import render, get_object_or_404
 from core import models
+from .forms import *
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect
 
@@ -137,6 +138,85 @@ class declarer_list(TemplateView):
         c['title'] = 'Список заявителей'
         c['declarers'] = models.Declarer.objects.all()
         return c
+
+
+def appeal_create(request):
+    if request.method == 'POST':
+        form = ApplealForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('/')
+            except:
+                form.add_error(None, 'Ошибка')
+    else:
+        form = ApplealForm()
+    return render(request, 'core/appeal_create.html', {'form': form})
+
+
+def edit_appeal(request, pk):
+    appeal = models.Appeal.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ApplealForm(request.POST, instance=appeal)
+        if form.is_valid():
+            form.save()
+    else:
+        form = ApplealForm(instance=appeal)
+    return render(request, 'core/edit_appeal.html', {'form': form})
+
+
+def declarer_create(request):
+    if request.method == 'POST':
+        form = DeclarerForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('/')
+            except:
+                form.add_error(None, 'Ошибка')
+    else:
+        form = DeclarerForm()
+    return render(request, 'core/declarer_create.html', {'form': form})
+
+
+def edit_declarer(request, pk):
+    declarer = models.Declarer.objects.get(id=pk)
+    if request.method == 'POST':
+        form = DeclarerForm(request.POST, instance=declarer)
+        if form.is_valid():
+            form.save()
+    else:
+        form = DeclarerForm(instance=declarer)
+    return render(request, 'core/edit_declarer.html', {'form': form})
+
+
+def service_create(request):
+    if request.method == 'POST':
+        form = ServiceForm(request.POST)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('/')
+            except:
+                form.add_error(None, 'Ошибка')
+    else:
+        form = ServiceForm()
+    return render(request, 'core/service_create.html', {'form': form})
+
+
+def edit_service(request, pk):
+    service = models.Service.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, instance=service)
+        if form.is_valid():
+            try:
+                form.save()
+                return redirect('/')
+            except:
+                form.add_error(None, 'Ошибка')
+    else:
+        form = ServiceForm(instance=service)
+    return render(request, 'core/edit_service.html', {'form': form})
 
 
 

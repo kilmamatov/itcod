@@ -17,5 +17,11 @@ urlpatterns = [
     path('services/<int:pk>', core.views.service_detail.as_view()),
     path('appeal_list/', core.views.appeal_list.as_view()),
     path('declarer_list/', core.views.declarer_list.as_view()),
+    path('appeal_create/', core.views.appeal_create),
+    path('edit_appeal/<int:pk>', core.views.edit_appeal),
+    path('edit_declarer/<int:pk>', core.views.edit_declarer),
+    path('edit_service/<int:pk>', core.views.edit_service),
+    path('declarer_create/', core.views.declarer_create),
+    path('service_create/', core.views.service_create),
     path('', core.views.index.as_view()),
 ]

@@ -24,6 +24,7 @@
         {% else %}
         <h5>Служб нет</h5>
         {% endif %}
+    <br><a href="/edit_appeal/{{p.pk}}">Редактирование</a>
     {% endfor %}
 {% include "core/footer.html" with year=y %}
 {% endblock %}

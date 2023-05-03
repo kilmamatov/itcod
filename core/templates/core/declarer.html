@@ -9,6 +9,7 @@
         <li>Телефон: {{p.phone|default_if_none:"-"}}</li>
         <li>Фото: {{p.photo|default:"-"}}</li>
         <li>Состояние здоровья: {{p.health_status}}</li>
+        <br><a href="/edit_declarer/{{p.pk}}">Редактирование</a>
         {% endfor %}
     </ol>
 

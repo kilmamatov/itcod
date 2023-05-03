@@ -6,7 +6,7 @@
         <li><a href="/appeals/{{i.pk}}">{{i.number}}</a></li>
             <ol>
             {% for s in i.services.all %}
-            <li>{{s}}</li>
+            <li><a href="/services/{{s.pk}}">{{s}}</a></li>
             {% empty %}
             <p>Не назнач</p>
             {% endfor %}

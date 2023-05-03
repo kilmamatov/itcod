@@ -144,11 +144,8 @@ def appeal_create(request):
     if request.method == 'POST':
         form = ApplealForm(request.POST)
         if form.is_valid():
-            try:
-                form.save()
-                return redirect('/')
-            except:
-                form.add_error(None, 'Ошибка')
+            form.save()
+            return redirect('/')
     else:
         form = ApplealForm()
     return render(request, 'core/appeal_create.html', {'form': form})
@@ -169,11 +166,8 @@ def declarer_create(request):
     if request.method == 'POST':
         form = DeclarerForm(request.POST)
         if form.is_valid():
-            try:
-                form.save()
-                return redirect('/')
-            except:
-                form.add_error(None, 'Ошибка')
+            form.save()
+            return redirect('/')
     else:
         form = DeclarerForm()
     return render(request, 'core/declarer_create.html', {'form': form})
@@ -194,11 +188,8 @@ def service_create(request):
     if request.method == 'POST':
         form = ServiceForm(request.POST)
         if form.is_valid():
-            try:
-                form.save()
-                return redirect('/')
-            except:
-                form.add_error(None, 'Ошибка')
+            form.save()
+            return redirect('/')
     else:
         form = ServiceForm()
     return render(request, 'core/service_create.html', {'form': form})
@@ -209,14 +200,11 @@ def edit_service(request, pk):
     if request.method == 'POST':
         form = ServiceForm(request.POST, instance=service)
         if form.is_valid():
-            try:
-                form.save()
-                return redirect('/')
-            except:
-                form.add_error(None, 'Ошибка')
+            form.save()
     else:
         form = ServiceForm(instance=service)
     return render(request, 'core/edit_service.html', {'form': form})
+
 
 
 

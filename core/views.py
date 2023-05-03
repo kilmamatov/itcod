@@ -3,6 +3,7 @@ from django.views.generic import ListView, TemplateView, View
 from django.shortcuts import render, get_object_or_404
 from core import models
 from .forms import *
+from core import filters
 from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect
 
@@ -137,6 +138,7 @@ class declarer_list(TemplateView):
         c = super().get_context_data(**kwargs)
         c['title'] = 'Список заявителей'
         c['declarers'] = models.Declarer.objects.all()
+        c['filter'] = filters.Declarer(self.request.GET, queryset=models.Declarer.objects.all())
         return c
 
 

@@ -252,12 +252,12 @@ list(models.Declarer.objects.values('name').annotate(Count('appeals')))
 
 -- 1.4 АДМИНКА
 
-№1-2
-
 @admin.register(models.Appeal)
 class Appeal(admin.ModelAdmin):
-    list_display = ('number', 'status')
-    list_editable = ('description')
+    list_display = ('number', 'created')
+    search_fields = ['number']
+    list_filter = ('number',)
+    date_hierarchy = 'declarer__age'
 
 
 @admin.register(models.Service)
@@ -265,16 +265,16 @@ class Service(admin.ModelAdmin):
     list_display = ('name',)
 
 
+class AppealInline(admin.TabularInline):
+    model = models.Appeal
+    readonly_fields = ['number']
+
+
 @admin.register(models.Declarer)
 class Declarer(admin.ModelAdmin):
     list_display = ('name',)
+    inlines = [AppealInline]
 
-№3
-class Appeal(admin.ModelAdmin):
-    fields = ['number']
-
-
-admin.site.register(models.Appeal, Appeal)
 
 
 ----1.5
@@ -363,6 +363,361 @@ urlpatterns = [
 
 ---ДОПОЛНИТЕЛЬНОЕ
 appeal.html
+№1
+# def appeal_detail(request, pk):
+#     a = models.Appeal.objects.all()
+#     appeals = models.Appeal.objects.filter(pk=pk)
+#     service = models.Service.objects.filter(appeals__pk=pk)
+#     return render(request, 'core/appeal.html', {'appeals': appeals, 'service': service, 'a': a})
+
 declarer.html
+
+# def declarer_detail(request, pk):
+#     declarers = models.Declarer.objects.filter(pk=pk)
+#     return render(request, 'core/declarer.html', {'declarers': declarers})
+
 service.html
+
+# def service_detail(request, pk):
+#     services = models.Service.objects.filter(pk=pk)
+#     return render(request, 'core/service.html', {'services': services})
+
+№2
+
+appeal_list.html
+
+# def appeal_list(request):
+#     appeals = models.Appeal.objects.all()
+#     return render(request, 'core/appeal_list.html', {'appeals': appeals})
+
+declarer_list.html
+
+# def declarer_list(request):
+#     declarers = models.Declarer.objects.all()
+#     return render(request, 'core/declarer_list.html', context={'title': 'Список заявителей', 'declarers': declarers})
+
+№3
+
+# def index(request):
+#     return render(request, 'core/index.html', context={'title': 'Главная страница'})
+Тут я засунул все ссылки в базовый шаблон(немного не по заданию но так было удобнее)
+base.html
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {{ title }} {% endblock %}</title>
+</head>
+<body>
+    <br><a href="/appeals/">appeals</a>
+    <br><a href="/declarers/">declarers</a>
+    <br><a href="/services/">services</a> <a href="/service_create/">service_create</a>
+    <br><a href="/appeal_list/">appeal_list</a> <a href="/appeal_create/">appeal_create</a>
+    <br><a href="/declarer_list/">declarer_list</a> <a href="/declarer_create/">declarer_create</a>
+    <br>{% block content %}{% endblock %}
+</body>
+</html>
+
+---ШАБЛОНЫ
+№1-2
+base.html
+
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %} {{ title }} {% endblock %}</title>
+</head>
+<body>
+    <br><a href="/appeals/">appeals</a>
+    <br><a href="/declarers/">declarers</a>
+    <br><a href="/services/">services</a> <a href="/service_create/">service_create</a>
+    <br><a href="/appeal_list/">appeal_list</a> <a href="/appeal_create/">appeal_create</a>
+    <br><a href="/declarer_list/">declarer_list</a> <a href="/declarer_create/">declarer_create</a>
+    <br>{% block content %}{% endblock %}
+</body>
+</html>
+
+№3
+declarer.html
+
+    <ol>
+        {% for p in declarers %}
+        <li>Имя: {{p.name|title}}</li>
+        <li>Возраст: {{p.age}}</li>
+        <li>Пол: {{p.gender}}</li>
+        <li>Телефон: {{p.phone|default_if_none:"-"}}</li>
+        <li>Фото: {{p.photo|default:"-"}}</li>
+        <li>Состояние здоровья: {{p.health_status}}</li>
+        <br><a href="/edit_declarer/{{p.pk}}">Редактирование</a>
+        {% endfor %}
+    </ol>
+
+№4
+appeal.html
+
+    {% for p in appeals %}
+        <h4>Номер обращения: {{p.number}}</h4>
+        <h4>Имя заявителя: {{p.declarer.name}}</h4>
+        <h4>Время обращения: {{p.created|date:"D d M Y"}}</h4>
+        <h4>Прошло с обращения: {{p.created|timesince}}</h4>
+        <h4>количество пострадавших: {{p.casualties}}</h4>
+        <h4>Не звонить: {{p.dont_call|yesno:"Да,Нет"}}</h4>
+        <h4>Описание</h4>
+        {% if p.description %}
+        {{p.description}}
+        {% else %}
+        <h5>Описания нет</h5>
+        {% endif %}
+        {% if p.services %}
+        <h4>Экстренные службы: {{p.services.all|join:', '|upper}}</h4>
+        {% else %}
+        <h5>Служб нет</h5>
+        {% endif %}
+    {% endfor %}
+
+№5
+declarer_list.html
+
+        {% if forloop.first %}
+            cod
+        {% elif forloop.last %}
+            cod
+
+№6
+footer.html
+
+<footer class="footer">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 text-center">
+                <p>{% now "SHORT_DATETIME_FORMAT"%} Время</p>
+            </div>
+        </div>
+    </div>
+</footer>
+
+Подключение
+{% include "core/footer.html" with year=y %}
+
+№7
+appeal.html
+declarer.html
+
+№8
+declarer.html
+
+    <ol>
+        {% for p in declarers %}
+        <li>Имя: {{p.name|title}}</li>
+        <li>Возраст: {{p.age}}</li>
+        <li>Пол: {{p.gender}}</li>
+        <li>Телефон: {{p.phone|default_if_none:"-"}}</li>
+        <li>Фото: {{p.photo|default:"-"}}</li>
+        <li>Состояние здоровья: {{p.health_status}}</li>
+        <br><a href="/edit_declarer/{{p.pk}}">Редактирование</a>
+        {% endfor %}
+    </ol>
+
+№10
+appeal.html
+
+    {% for p in appeals %}
+        <h4>Номер обращения: {{p.number}}</h4>
+        <h4>Имя заявителя: {{p.declarer.name}}</h4>
+        <h4>Время обращения: {{p.created|date:"D d M Y"}}</h4>
+        <h4>Прошло с обращения: {{p.created|timesince}}</h4>
+        <h4>количество пострадавших: {{p.casualties}}</h4>
+        <h4>Не звонить: {{p.dont_call|yesno:"Да,Нет"}}</h4>
+        <h4>Описание</h4>
+        {% if p.description %}
+        {{p.description}}
+        {% else %}
+        <h5>Описания нет</h5>
+        {% endif %}
+        {% if p.services %}
+        <h4>Экстренные службы: {{p.services.all|join:', '|upper}}</h4>
+        {% else %}
+        <h5>Служб нет</h5>
+        {% endif %}
+    {% endfor %}
+
+---CLASS-BASED-VIEWS
+
+class appeal_detail(View):
+    template_name = 'core/appeal.html'
+
+    def get(self, request, pk):
+        a = models.Appeal.objects.all()  # для быстрого меню между обащениями
+        appeals = models.Appeal.objects.filter(pk=pk)
+        service = models.Service.objects.filter(appeals__pk=pk)
+        return render(request, self.template_name, {'appeals': appeals, 'service': service, 'a': a})
+
+
+class declarer_detail(View):
+    template_name = 'core/declarer.html'
+
+    def get(self, request, pk):
+        declarers = models.Declarer.objects.filter(pk=pk)
+        return render(request, self.template_name, {'declarers': declarers})
+
+
+class service_detail(View):
+    template_name = 'core/service.html'
+
+    def get(self, request, pk):
+        services = models.Service.objects.filter(pk=pk)
+        return render(request, self.template_name, {'services': services})
+
+
+class appeal_list(TemplateView):
+    template_name = 'core/appeal_list.html'
+
+    def get_context_data(self, **kwargs):
+        c = super().get_context_data(**kwargs)
+        c['appeals'] = models.Appeal.objects.all()
+        return c
+
+
+class index(TemplateView):
+    template_name = 'core/index.html'
+
+
+class declarer_list(TemplateView):
+    template_name = 'core/declarer_list.html'
+
+    def get_context_data(self, **kwargs):
+        c = super().get_context_data(**kwargs)
+        c['title'] = 'Список заявителей'
+        c['declarers'] = models.Declarer.objects.all()
+        return c
+
+
+---1.6 ФОРМЫ
+
+№1
+формы для создания и редактирования
+
+class ApplealForm(forms.ModelForm):
+    services = forms.ModelMultipleChoiceField(
+        queryset=models.Service.objects.all(),
+        widget=forms.CheckboxSelectMultiple,
+        required=False,
+        label='Службы'
+    )
+
+    class Meta:
+        model = models.Appeal
+        fields = '__all__'
+
+
+class DeclarerForm(forms.ModelForm):
+
+    class Meta:
+        model = models.Declarer
+        fields = '__all__'
+        widgets = {
+            'health_status': forms.Textarea(attrs={'cols': 50, 'rows': 10})
+        }
+
+    def clean_phone(self):
+        phone = self.cleaned_data['phone']
+        if len(str(phone)) > 11:
+            raise ValidationError('Не может быть длинее 11')
+        return phone
+
+    def clean_age(self):
+        age = self.cleaned_data['age']
+        if age > date.today():
+            raise ValidationError('Дата не может быть в будущем')
+        return age
+
+
+class ServiceForm(forms.ModelForm):
+    cod = forms.CharField(help_text='Подсказка', label='Код')
+
+    class Meta:
+        model = models.Service
+        fields = '__all__'
+
+№2 шаблоны
+appeal_create.html
+declarer_create.html
+service_create.html
+edit_service.html
+edit_declarer.html
+edit_appeal.html
+
+№3 вьюхи
+
+def appeal_create(request):
+    title = 'Создание обращения'
+    if request.method == 'POST':
+        form = ApplealForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = ApplealForm()
+    return render(request, 'core/appeal_create.html', {'title': title, 'form': form})
+
+
+def edit_appeal(request, pk):
+    title = 'Редактирование обращения'
+    appeal = models.Appeal.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ApplealForm(request.POST, instance=appeal)
+        if form.is_valid():
+            form.save()
+    else:
+        form = ApplealForm(instance=appeal)
+    return render(request, 'core/edit_appeal.html', {'title': title, 'form': form})
+
+
+def declarer_create(request):
+    title = 'Создание пользователя'
+    if request.method == 'POST':
+        form = DeclarerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = DeclarerForm()
+    return render(request, 'core/declarer_create.html', {'title': title, 'form': form})
+
+
+def edit_declarer(request, pk):
+    declarer = models.Declarer.objects.get(id=pk)
+    if request.method == 'POST':
+        form = DeclarerForm(request.POST, instance=declarer)
+        if form.is_valid():
+            form.save()
+    else:
+        form = DeclarerForm(instance=declarer)
+    return render(request, 'core/edit_declarer.html', {'form': form})
+
+
+def service_create(request):
+    if request.method == 'POST':
+        form = ServiceForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('/')
+    else:
+        form = ServiceForm()
+    return render(request, 'core/service_create.html', {'form': form})
+
+
+def edit_service(request, pk):
+    service = models.Service.objects.get(id=pk)
+    if request.method == 'POST':
+        form = ServiceForm(request.POST, instance=service)
+        if form.is_valid():
+            form.save()
+    else:
+        form = ServiceForm(instance=service)
+    return render(request, 'core/edit_service.html', {'form': form})
+
+
+
 

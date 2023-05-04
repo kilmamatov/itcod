@@ -73,7 +73,7 @@ class appeal_detail(View):
     template_name = 'core/appeal.html'
 
     def get(self, request, pk):
-        a = models.Appeal.objects.all()
+        a = models.Appeal.objects.all()  # для быстрого меню между обащениями
         appeals = models.Appeal.objects.filter(pk=pk)
         service = models.Service.objects.filter(appeals__pk=pk)
         return render(request, self.template_name, {'appeals': appeals, 'service': service, 'a': a})
@@ -153,7 +153,7 @@ def appeal_create(request):
             return redirect('/')
     else:
         form = ApplealForm()
-    return render(request, 'core/appeal_create.html', {'title': title,'form': form})
+    return render(request, 'core/appeal_create.html', {'title': title, 'form': form})
 
 
 def edit_appeal(request, pk):

@@ -2,7 +2,7 @@
 
 {% block content %}
     <ol>
-        {% for i in appeals %}
+        {% for i in filter.qs %}
         <li><a href="/appeals/{{i.pk}}">{{i.number}}</a></li>
             <ol>
             {% for s in i.services.all %}
@@ -13,6 +13,11 @@
             </ol>
         {% endfor %}
     </ol>
+    <form method="get">
+        {{ filter.form.as_p }}
+        <input type="submit" />
+    </form>
+
     <h5>Среднее количество экс служб: </h5>
     <h5>Количество обращений: {{ appeals|length }}</h5>
 {% include "core/footer.html" with year=y %}

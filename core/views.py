@@ -1,5 +1,6 @@
 from django.db.models import Count, Avg
 from django.views.generic import ListView, TemplateView, View
+from django_filters.views import FilterView
 from django.shortcuts import render, get_object_or_404
 from core import models
 from .forms import *
@@ -115,6 +116,7 @@ class appeal_list(TemplateView):
     def get_context_data(self, **kwargs):
         c = super().get_context_data(**kwargs)
         c['appeals'] = models.Appeal.objects.all()
+        c['filter'] = filters.Appeal(self.request.GET, queryset=models.Appeal.objects.all())
         return c
 
 
@@ -143,6 +145,7 @@ class declarer_list(TemplateView):
 
 
 def appeal_create(request):
+    title = 'Создание обращения'
     if request.method == 'POST':
         form = ApplealForm(request.POST)
         if form.is_valid():
@@ -150,10 +153,11 @@ def appeal_create(request):
             return redirect('/')
     else:
         form = ApplealForm()
-    return render(request, 'core/appeal_create.html', {'form': form})
+    return render(request, 'core/appeal_create.html', {'title': title,'form': form})
 
 
 def edit_appeal(request, pk):
+    title = 'Редактирование обращения'
     appeal = models.Appeal.objects.get(id=pk)
     if request.method == 'POST':
         form = ApplealForm(request.POST, instance=appeal)
@@ -161,10 +165,11 @@ def edit_appeal(request, pk):
             form.save()
     else:
         form = ApplealForm(instance=appeal)
-    return render(request, 'core/edit_appeal.html', {'form': form})
+    return render(request, 'core/edit_appeal.html', {'title': title, 'form': form})
 
 
 def declarer_create(request):
+    title = 'Создание пользователя'
     if request.method == 'POST':
         form = DeclarerForm(request.POST)
         if form.is_valid():
@@ -172,7 +177,7 @@ def declarer_create(request):
             return redirect('/')
     else:
         form = DeclarerForm()
-    return render(request, 'core/declarer_create.html', {'form': form})
+    return render(request, 'core/declarer_create.html', {'title': title, 'form': form})
 
 
 def edit_declarer(request, pk):

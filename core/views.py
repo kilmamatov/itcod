@@ -51,24 +51,24 @@ def val(request):
 def serp(request):
     return HttpResponse(models.Declarer.objects.filter(phone=request.GET['phone']).values())
 
-#
-# def declarer_js(request, pk):
-#     object_list = []
-#     for p in models.Declarer.objects.filter(pk=pk):
-#         object_list.append({
-#             'id': p.id,
-#             'name': p.name,
-#             'age': p.age,
-#             'gender': p.gender,
-#             'phone': p.phone,
-#             'health_status': p.health_status
-#         })
-#     return JsonResponse({'Declarer': object_list})
+
+def declarer_js(request, pk):
+    object_list = []
+    for p in models.Declarer.objects.filter(pk=pk):
+        object_list.append({
+            'id': p.id,
+            'name': p.name,
+            'age': p.age,
+            'gender': p.gender,
+            'phone': p.phone,
+            'health_status': p.health_status
+        })
+    return JsonResponse({'Declarer': object_list})
 
 
-def declarer_js(request):
-    p = models.Declarer.objects.filter(pk=request.GET['pk']).values().get()
-    return JsonResponse(p)
+# def declarer_js(request):
+#     p = models.Declarer.objects.filter(pk=request.GET['pk']).values().get()
+#     return JsonResponse(p)
 
 
 # def appeal_detail(request, pk):

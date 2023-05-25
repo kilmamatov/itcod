@@ -23,10 +23,11 @@ class Declarer(models.Model):
         (woman, 'Женщина')
     ]
     name = models.CharField('ФИО', max_length=50)
+    last_name = models.CharField('ФИО', max_length=255)
     age = models.DateField('Дата рождения')
     gender = models.CharField('Ваш пол', max_length=7, choices=gender_choices)
     phone = models.IntegerField('Номер телефона', blank=True, null=True)
-    photo = models.ImageField('Фото', blank=True)
+    photo = models.ImageField('Фото', blank=True, null=True, upload_to='media/')  # дополнить
     health_status = models.TextField(
         'Состояние здоровья',
         blank=True,

@@ -27,15 +27,15 @@ obr.save()
 b = models.Declarer.objects.get(name='Иванов Иван Иванович')
 models.Appeal.objects.create(declarer=b, number='13', casualties='1')
 
-№3
+№3 Готово
 #Добаавление Экст служб(add)
-ser = models.Service.objects.get(name='Скорая')
-obr.services.add = ser
+p = models.Appeal.objects.get(pk=1)
+ser = models.Service.objects.get(name='Полиция')
+p.services.add(ser)
 
-#Добовление Экст служб(set)
-obr = models.Appeal(number='12',casualties='5') или
+#Добовление Экст служб(set) почитать подробнее чем отличается
 obr = models.Appeal.objects.get(number='12')
-a = models.Service.get(name='Полиция')
+a = models.Service.objects.get(name='Полиция')
 a.appeals.set([obr])
 
 №2
@@ -45,10 +45,11 @@ b.appeals.create(number='14',casualties='24')
 
 ЗАПРОСЫ В БД
 
-№1
-models.Declarer.objects.filter(pk=1) <QuerySet [<Declarer: Зубенко Михаил Петрович>]>
-models.Declarer.objects.get(pk=1) (<Declarer: Зубенко Михаил Петрович>)
-models.Declarer.objects.all()[0] (<Declarer: Зубенко Михаил Петрович>)
+№1 как из квс получить обьект (first)
+models.Declarer.objects.filter(pk=1).first() <Declarer: Зубенко Михаил Петрович>
+models.Declarer.objects.filter(pk=1).get() <Declarer: Зубенко Михаил Петрович>
+models.Declarer.objects.get(pk=1) <Declarer: Зубенко Михаил Петрович>
+models.Declarer.objects.all()[0] <Declarer: Зубенко Михаил Петрович>
 
 №2
 1 Способ
@@ -58,7 +59,7 @@ z.appeals.all()
 models.Appeal.objects.filter(declarer__name='Иванов Иван Иванович')
 
 №3
-models.Service.objects.all()[:3]
+models.Service.objects.all()[:3] #как это называется (срез массива)
 (<QuerySet [<Service: Скорая>, <Service: Полиция>, <Service: Пожарная>]>)
 
 №4
@@ -91,14 +92,15 @@ models.Appeal.objects.order_by("?").first()
 models.Appeal.objects.filter(declarer__id='2')
 <QuerySet [<Appeal: 11 - 2023-04-12>]>
 
-№2
-models.Declarer.objects.filter(gender='men', appeals=None)
+№2 вместо нон использовать лукап Исправил
+# models.Declarer.objects.filter(gender='men', appeals=None)
+models.Declarer.objects.filter(gender='men', appeals__isnull=True)
+
 
 №3
 models.Declarer.objects.order_by('id')
 
 №4
-from django.contrib.auth.models import User
 from datetime import date, timedelta
 
 p = date.today() - timedelta(days=(18*365))
@@ -106,7 +108,6 @@ p = date.today() - timedelta(days=(18*365))
 models.Declarer.objects.filter(age__lte=p)
 
 №5
-from django.contrib.auth.models import User
 from datetime import date, timedelta
 
 p = date.today() - timedelta(days=(18*365))
@@ -120,27 +121,29 @@ models.Declarer.objects.all().exists()
 models.Declarer.objects.filter(name__contains='Алекс')
 
 №8
-models.Appeal.objects.all().exclude(services=None)
+models.Appeal.objects.all().exclude(services__isnull=True)
 
-№9
-models.Appeal.objects.filter(services__cod='101')[0].created
+№9 добавить проверку и через ферст
+models.Appeal.objects.filter(services__cod='102')[0].created
+p = models.Appeal.objects.filter(services__cod='102').first()
+p.created
 
 №10
 models.Appeal.objects.filter(created__lt='2023-04-13')
 
 #11
-models.Declarer.objects.filter(phone=None).filter(photo='')
+models.Declarer.objects.filter(phone__isnull=True).filter(photo='')
 
 #12
 models.Declarer.objects.filter(appeals__services__cod='102')
 
 
 №13
-qs1 = models.Declarer.objects.filter(phone=None).filter(photo='')
+qs1 = models.Declarer.objects.filter(Q(phone__isnull=True) & Q(photo=''))
 qs2 = models.Declarer.objects.filter(appeals__services__cod='102')
-qs1.union(qs2)
-qs1.intersection(qs2)
-qs1.difference(qs2)
+qs3 = qs1.union(qs2)
+qs3 = qs1.intersection(qs2)
+qs3 = qs1.difference(qs2)
 
 
 
@@ -154,16 +157,23 @@ models.Declarer.objects.filter(phone=None).count()
 models.Declarer.objects.order_by('health_status').distinct('health_status')
 
 №17
-models.Appeal.objects.filter(description__icontains='ключевое слове без уч рег')
+models.Appeal.objects.filter(description__icontains='КлюЧевое')
 
-№18
+№18 сделать по другому
 models.Declarer.objects.values('phone')
+list(models.Declarer.objects.values_list('phone', flat=True))
+
 
 №19
 models.Declarer.objects.values('name', 'age', 'gender', 'phone', 'photo')
 
-№20
-SELECT * FROM core_service
+
+№20 написать в консоле
+query = "SELECT * FROM core_service"
+result = models.Service.objects.raw(query)
+for obj in result:
+    print(obj)
+
 
 №21
 p = models.Declarer.objects.get(phone='12341234')
@@ -171,13 +181,14 @@ p.phone = 2323
 p.save()
 
 
-№22
+№22 другой метон создание либо редакт
 p = models.Declarer.objects.get(phone='12341234')
 p.phone = 2323
 p.save()
 
-models.Declarer.objects.get_or_create(phone='12341234', name='Владимир', age='2002-08-01', gender='men')
+models.Declarer.objects.update_or_create(phone='12341234', name='Владимир', age='2002-08-01', gender='men')
 
+почиттать что возвращает = возращает кортеж из обьекта и значения true false(был ли создан новый обьект)
 
 №23
 models.Declarer.objects.bulk_create(
@@ -186,7 +197,6 @@ models.Declarer.objects.bulk_create(
  )
 
 №24
-
 p = models.Declarer.objects.filter(Q(pk=1) | Q(pk=2))
 p.update(health_status='Полностью здоров')
 
@@ -195,12 +205,14 @@ p.update(health_status='Полностью здоров')
 models.Appeal.objects.filter(pk=1).values('declarer__name')
 
 
-№26
-list(models.Appeal.objects.values('number', 'services__cod'))
+№26 использовать втроенный метод
+list(models.Appeal.objects.values_list('number', 'services__cod'))
 
 
-№27
-list(models.Appeal.objects.values('created'))
+№27 использовать втроенный метод
+list(models.Appeal.objects.values_list('created', flat=True))
+appeal_list = [appeal['created'] for appeal in models.Appeal.objects.values('created')]
+
 
 
 №28
@@ -209,15 +221,17 @@ models.Appeal.objects.none()
 
 №29
 from django.db.models import Avg
-models.Appeal.objects.aggregate(Avg('casualties'))
-{'casualties__avg': 8.25}
+p = models.Appeal.objects.aggregate(Avg('casualties'))
+p['casualties__avg']
+8.25
 
 
 №30
-models.Appeal.objects.aggregate(Sum('casualties'))
-{'casualties__sum': 33}
+p = models.Appeal.objects.aggregate(Sum('casualties'))
+p['casualties__sum']
+33
 
-
+aggregate annotate чем отличается почитаь подробнее
 №31
 models.Appeal.objects.values('number').annotate(Count("services"))
 <QuerySet [
@@ -228,14 +242,16 @@ models.Appeal.objects.values('number').annotate(Count("services"))
 ]>
 
 №32
-models.Appeal.objects.annotate(num_services=Count("services")).aggregate(Avg('num_services'))
-{'num_services__avg': 0.75}
+p = models.Appeal.objects.annotate(num_services=Count("services")).aggregate(Avg('num_services'))
+p['num_services__avg']
+0.75
 
 №33
 models.Appeal.objects.aggregate(Max('casualties'), Min('casualties'))
 
 №34
 list(models.Declarer.objects.values('name').annotate(Count('appeals')))
+
 
 [{'name': 'ntcn', 'appeals__count': 0},
  {'name': 'Александра', 'appeals__count': 0},
@@ -249,6 +265,25 @@ list(models.Declarer.objects.values('name').annotate(Count('appeals')))
  {'name': 'Пунин Алексей Владимирович', 'appeals__count': 0},
  {'name': 'ТЕст', 'appeals__count': 0},
  {'name': 'ТЕст2', 'appeals__count': 0}]
+
+list(models.Declarer.objects.values_list('name').annotate(Count('appeals')))
+
+[('nina', 0),
+ ('ntcn', 0),
+ ('Александра', 0),
+ ('Алексей', 0),
+ ('Владимир', 0),
+ ('Дусин Игорь', 1),
+ ('Зубенко Михаил Петрович', 4),
+ ('Иванов Иван Иванович', 3),
+ ('Николев Артем', 0),
+ ('Ниникова Нина Редина', 0),
+ ('Петя', 1),
+ ('Пунин Алексей Владимирович', 0),
+ ('Рустам Мусин', 0),
+ ('ТЕст', 0),
+ ('ТЕст2', 0)]
+
 
 -- 1.4 АДМИНКА
 

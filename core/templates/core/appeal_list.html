@@ -2,7 +2,7 @@
 
 {% block content %}
     <ol>
-        {% for i in filter.qs %}
+        {% for i in appeals %}
         <li><a href="/appeals/{{i.pk}}">{{i.number}}</a></li>
             <ol>
             {% for s in i.services.all %}
@@ -14,7 +14,7 @@
         {% endfor %}
     </ol>
     <form method="get">
-        {{ filter.form.as_p }}
+        {{ form.as_p }}
         <input type="submit" />
     </form>
 

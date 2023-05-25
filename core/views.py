@@ -1,6 +1,6 @@
-from django.db.models import Count, Avg
-from django.views.generic import ListView, TemplateView, View
-from django_filters.views import FilterView
+from django.urls import reverse_lazy, reverse
+from django.views.generic import ListView, TemplateView, View, DetailView, UpdateView, CreateView
+from django_filters.rest_framework import DjangoFilterBackend
 from django.shortcuts import render, get_object_or_404
 from core import models
 from .forms import *
@@ -9,34 +9,34 @@ from django.http import HttpResponse, Http404, JsonResponse
 from django.shortcuts import redirect
 
 
-# def appleal(request):
+# def appleal(request):  # сделать в одну строку
 #     count = models.Appeal.objects.count()
 #     if count:
 #         return HttpResponse(count)
 #     else:
 #         raise Http404
-#
-#
-# def declarer_phone(request, pk):
-#     qs = models.Declarer.objects.get(pk=pk)
-#     phone = qs.phone
-#     if phone:
-#         return HttpResponse(phone)
-#     else:
-#         raise Http404
-#
-#
-# def no_admin(request):
-#     return redirect('/admin/')
-#
-#
-# def val(request, values):
-#     return HttpResponse(values)
-#
-#
-# def serp(request, values):
+
+
+def appleal_count(request):
+    return HttpResponse(get_object_or_404(models.Appeal.objects.count()))
+
+
+def declarer_phone(request):
+    qs = get_object_or_404(models.Declarer.objects.filter(pk=request.GET.get('pk')))
+    return HttpResponse(qs.phone)
+
+
+def no_admin(request):
+    return redirect('/admin/')
+
+
+def val(request):
+    return HttpResponse(request.GET)
+
+
+# def serp(request):
 #     object_list = []
-#     for p in models.Declarer.objects.filter(phone=values):
+#     for p in models.Declarer.objects.filter(phone=request.GET.get('phone')):
 #         object_list.append({
 #             'id': p.id,
 #             'name': p.name,
@@ -46,7 +46,11 @@ from django.shortcuts import redirect
 #             'health_status': p.health_status
 #         })
 #         return HttpResponse(object_list)
-#
+
+
+def serp(request):
+    return HttpResponse(models.Declarer.objects.filter(phone=request.GET['phone']).values())
+
 #
 # def declarer_js(request, pk):
 #     object_list = []
@@ -62,6 +66,11 @@ from django.shortcuts import redirect
 #     return JsonResponse({'Declarer': object_list})
 
 
+def declarer_js(request):
+    p = models.Declarer.objects.filter(pk=request.GET['pk']).values().get()
+    return JsonResponse(p)
+
+
 # def appeal_detail(request, pk):
 #     a = models.Appeal.objects.all()
 #     appeals = models.Appeal.objects.filter(pk=pk)
@@ -69,14 +78,16 @@ from django.shortcuts import redirect
 #     return render(request, 'core/appeal.html', {'appeals': appeals, 'service': service, 'a': a})
 
 
-class appeal_detail(View):
+class AppealDetailView(DetailView):
     template_name = 'core/appeal.html'
 
-    def get(self, request, pk):
-        a = models.Appeal.objects.all()  # для быстрого меню между обащениями
-        appeals = models.Appeal.objects.filter(pk=pk)
-        service = models.Service.objects.filter(appeals__pk=pk)
-        return render(request, self.template_name, {'appeals': appeals, 'service': service, 'a': a})
+    def get_queryset(self):
+        return models.Appeal.objects.filter(pk=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['appeals'] = self.get_queryset()
+        return context
 
 
 # def declarer_detail(request, pk):
@@ -84,12 +95,16 @@ class appeal_detail(View):
 #     return render(request, 'core/declarer.html', {'declarers': declarers})
 
 
-class declarer_detail(View):
+class DeclarerdDetailView(DetailView):
     template_name = 'core/declarer.html'
 
-    def get(self, request, pk):
-        declarers = models.Declarer.objects.filter(pk=pk)
-        return render(request, self.template_name, {'declarers': declarers})
+    def get_queryset(self):
+        return models.Declarer.objects.filter(pk=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['declarers'] = self.get_queryset()
+        return context
 
 
 # def service_detail(request, pk):
@@ -97,12 +112,16 @@ class declarer_detail(View):
 #     return render(request, 'core/service.html', {'services': services})
 
 
-class service_detail(View):
+class ServiceDetailView(DetailView):
     template_name = 'core/service.html'
 
-    def get(self, request, pk):
-        services = models.Service.objects.filter(pk=pk)
-        return render(request, self.template_name, {'services': services})
+    def get_queryset(self):
+        return models.Service.objects.filter(pk=self.kwargs.get('pk'))
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['services'] = self.get_queryset()
+        return context
 
 
 # def appeal_list(request):
@@ -110,21 +129,29 @@ class service_detail(View):
 #     return render(request, 'core/appeal_list.html', {'appeals': appeals})
 
 
-class appeal_list(TemplateView):
+class AppealListView(ListView):
     template_name = 'core/appeal_list.html'
+    model = models.Appeal
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = filters.Appeal
+    context_object_name = 'appeals'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = self.filterset_class(data=self.request.GET, queryset=queryset).qs
+        return queryset
 
     def get_context_data(self, **kwargs):
-        c = super().get_context_data(**kwargs)
-        c['appeals'] = models.Appeal.objects.all()
-        c['filter'] = filters.Appeal(self.request.GET, queryset=models.Appeal.objects.all())
-        return c
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.filterset_class(data=self.request.GET).form
+        return context
 
 
 # def index(request):
 #     return render(request, 'core/index.html', context={'title': 'Главная страница'})
 
 
-class index(TemplateView):
+class Index(TemplateView):
     template_name = 'core/index.html'
 
 
@@ -133,15 +160,22 @@ class index(TemplateView):
 #     return render(request, 'core/declarer_list.html', context={'title': 'Список заявителей', 'declarers': declarers})
 
 
-class declarer_list(TemplateView):
+class DeclarerListView(ListView):
     template_name = 'core/declarer_list.html'
+    model = models.Declarer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = filters.Declarer
+    context_object_name = 'declarers'
+
+    def get_queryset(self):
+        queryset = super().get_queryset()
+        queryset = self.filterset_class(data=self.request.GET, queryset=queryset).qs
+        return queryset
 
     def get_context_data(self, **kwargs):
-        c = super().get_context_data(**kwargs)
-        c['title'] = 'Список заявителей'
-        c['declarers'] = models.Declarer.objects.all()
-        c['filter'] = filters.Declarer(self.request.GET, queryset=models.Declarer.objects.all())
-        return c
+        context = super().get_context_data(**kwargs)
+        context['form'] = self.filterset_class(data=self.request.GET).form
+        return context
 
 
 def appeal_create(request):
@@ -156,9 +190,16 @@ def appeal_create(request):
     return render(request, 'core/appeal_create.html', {'title': title, 'form': form})
 
 
-def edit_appeal(request, pk):
+class AppealCreateView(CreateView):
+    template_name = 'core/appeal_create.html'
+    model = models.Appeal
+    form_class = ApplealForm
+    success_url = '/'
+
+
+def edit_appeal(request):
     title = 'Редактирование обращения'
-    appeal = models.Appeal.objects.get(id=pk)
+    appeal = models.Appeal.objects.get(id=request.GET.get('pk'))
     if request.method == 'POST':
         form = ApplealForm(request.POST, instance=appeal)
         if form.is_valid():
@@ -166,6 +207,13 @@ def edit_appeal(request, pk):
     else:
         form = ApplealForm(instance=appeal)
     return render(request, 'core/edit_appeal.html', {'title': title, 'form': form})
+
+
+class UpdateAppealView(UpdateView):
+    model = models.Appeal
+    form_class = ApplealForm
+    template_name = 'core/edit_appeal.html'
+    success_url = '/appeal_list'
 
 
 def declarer_create(request):
@@ -202,8 +250,8 @@ def service_create(request):
     return render(request, 'core/service_create.html', {'form': form})
 
 
-def edit_service(request, pk):
-    service = models.Service.objects.get(id=pk)
+def edit_service(request):
+    service = models.Service.objects.get(id=request.GET.get('pk'))
     if request.method == 'POST':
         form = ServiceForm(request.POST, instance=service)
         if form.is_valid():

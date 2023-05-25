@@ -27,6 +27,7 @@ class Service(admin.ModelAdmin):
 
 class AppealInline(admin.TabularInline):
     model = models.Appeal
+    max_num = 1
     readonly_fields = ['number']
 
 

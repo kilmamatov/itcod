@@ -4,7 +4,7 @@
 {% block content %}
     <h4>список заявителей</h4>
     <ol>
-        {% for p in filter.qs %}
+        {% for p in declarers %}
         {% if forloop.first %}
             <li><a href="/declarers/{{p.pk}}">{{p}}</a></li>Первый
         {% elif forloop.last %}
@@ -15,7 +15,7 @@
         {% endfor %}
     </ol>
     <form method="get">
-        {{ filter.form.as_p }}
+        {{ form.as_p }}
         <input type="submit" />
     </form>
 {% endblock %}

@@ -228,6 +228,13 @@ def declarer_create(request):
     return render(request, 'core/declarer_create.html', {'title': title, 'form': form})
 
 
+class DeclarerCreateView(CreateView):
+    template_name = 'core/declarer_create.html'
+    model = models.Declarer
+    form_class = DeclarerForm
+    success_url = '/'
+
+
 def edit_declarer(request, pk):
     declarer = models.Declarer.objects.get(id=pk)
     if request.method == 'POST':
@@ -237,6 +244,13 @@ def edit_declarer(request, pk):
     else:
         form = DeclarerForm(instance=declarer)
     return render(request, 'core/edit_declarer.html', {'form': form})
+
+
+class UpdateDeclarerView(UpdateView):
+    model = models.Declarer
+    form_class = DeclarerForm
+    template_name = 'core/edit_declarer.html'
+    success_url = '/declarer_list'
 
 
 def service_create(request):
@@ -250,6 +264,13 @@ def service_create(request):
     return render(request, 'core/service_create.html', {'form': form})
 
 
+class ServiceCreateView(CreateView):
+    template_name = 'core/service_create.html'
+    model = models.Service
+    form_class = ServiceForm
+    success_url = '/'
+
+
 def edit_service(request):
     service = models.Service.objects.get(id=request.GET.get('pk'))
     if request.method == 'POST':
@@ -259,6 +280,13 @@ def edit_service(request):
     else:
         form = ServiceForm(instance=service)
     return render(request, 'core/edit_service.html', {'form': form})
+
+
+class UpdateServiceView(UpdateView):
+    model = models.Service
+    form_class = ServiceForm
+    template_name = 'core/edit_service.html'
+    success_url = '/'
 
 
 

@@ -190,11 +190,11 @@ def appeal_create(request):
     return render(request, 'core/appeal_create.html', {'title': title, 'form': form})
 
 
-class AppealCreateView(CreateView):
-    template_name = 'core/appeal_create.html'
-    model = models.Appeal
-    form_class = ApplealForm
-    success_url = '/'
+# class AppealCreateView(CreateView):
+#     template_name = 'core/appeal_create.html'
+#     model = models.Appeal
+#     form_class = ApplealForm
+#     success_url = '/'
 
 
 def edit_appeal(request):
@@ -209,11 +209,11 @@ def edit_appeal(request):
     return render(request, 'core/edit_appeal.html', {'title': title, 'form': form})
 
 
-class UpdateAppealView(UpdateView):
-    model = models.Appeal
-    form_class = ApplealForm
-    template_name = 'core/edit_appeal.html'
-    success_url = '/appeal_list'
+# class UpdateAppealView(UpdateView):
+#     model = models.Appeal
+#     form_class = ApplealForm
+#     template_name = 'core/edit_appeal.html'
+#     success_url = '/appeal_list'
 
 
 def declarer_create(request):
@@ -228,11 +228,11 @@ def declarer_create(request):
     return render(request, 'core/declarer_create.html', {'title': title, 'form': form})
 
 
-class DeclarerCreateView(CreateView):
-    template_name = 'core/declarer_create.html'
-    model = models.Declarer
-    form_class = DeclarerForm
-    success_url = '/'
+# class DeclarerCreateView(CreateView):
+#     template_name = 'core/declarer_create.html'
+#     model = models.Declarer
+#     form_class = DeclarerForm
+#     success_url = '/'
 
 
 def edit_declarer(request, pk):
@@ -246,11 +246,11 @@ def edit_declarer(request, pk):
     return render(request, 'core/edit_declarer.html', {'form': form})
 
 
-class UpdateDeclarerView(UpdateView):
-    model = models.Declarer
-    form_class = DeclarerForm
-    template_name = 'core/edit_declarer.html'
-    success_url = '/declarer_list'
+# class UpdateDeclarerView(UpdateView):
+#     model = models.Declarer
+#     form_class = DeclarerForm
+#     template_name = 'core/edit_declarer.html'
+#     success_url = '/declarer_list'
 
 
 def service_create(request):
@@ -264,11 +264,11 @@ def service_create(request):
     return render(request, 'core/service_create.html', {'form': form})
 
 
-class ServiceCreateView(CreateView):
-    template_name = 'core/service_create.html'
-    model = models.Service
-    form_class = ServiceForm
-    success_url = '/'
+# class ServiceCreateView(CreateView):
+#     template_name = 'core/service_create.html'
+#     model = models.Service
+#     form_class = ServiceForm
+#     success_url = '/'
 
 
 def edit_service(request):
@@ -282,12 +282,12 @@ def edit_service(request):
     return render(request, 'core/edit_service.html', {'form': form})
 
 
-class UpdateServiceView(UpdateView):
-    model = models.Service
-    form_class = ServiceForm
-    template_name = 'core/edit_service.html'
-    success_url = '/'
-
+# class UpdateServiceView(UpdateView):
+#     model = models.Service
+#     form_class = ServiceForm
+#     template_name = 'core/edit_service.html'
+#     success_url = '/'
+#
 
 
 
